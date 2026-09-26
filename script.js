@@ -39,8 +39,27 @@ contactForm.addEventListener('submit', function (event) {
         return;
     }
 
-    showStatus('Thanks! Your message has been sent.', 'success');
-    contactForm.reset();
+    // Data passed validation — now actually send it to Formspree
+    showStatus('Sending...', '');
+
+    fetch(contactForm.action, {
+        method: 'POST',
+        body: new FormData(contactForm),
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+        .then(function (response) {
+            if (response.ok) {
+                showStatus('Thanks! Your message has been sent.', 'success');
+                contactForm.reset();
+            } else {
+                showStatus('Oops! Something went wrong. Please try again.', 'error');
+            }
+        })
+        .catch(function () {
+            showStatus('Network error. Please check your connection and try again.', 'error');
+        });
 });
 
 function showStatus(message, type) {
